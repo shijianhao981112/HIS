@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 
+namespace : 类路径
+	与此映射文件关联的接口文件路径
+ -->
+<mapper namespace="com.zhiyou100.mapper.DoctorMapper">
+
+
+	<resultMap type="Doctor" id="classDoctor">
+		<id column="id" property="id"/>
+		<result column="name" property="name"/>
+		<result column="time" property="time"/>
+		
+		<association property="section" javaType="Section">
+		<id column="secco_name" property="secco_name"/>
+		</association>
+		
+	</resultMap>
+		
+	<select id="findAll" parameterType="Map" resultMap="classDoctor">
+		
+		select d.id,d.name,d.time,s.secco_name
+		 from doctor d,section s
+		 where d.section_id=s.id
+		 
+		
+			<if test="id != null and id != '' ">
+			and	d.id like '%${id}%'
+			</if>
+			<if test="dname != null and dname != '' ">
+			and	d.name like '%${dname}%'
+			</if>
+			<if test="secco_name != null and secco_name != '' ">
+			and	s.secco_name like '%${secco_name}%'
+			</if>
+		
+			
+	</select>
+	
+	
+	
+	
+	<!-- 添加 -->
+	<insert id="insertDoctor" parameterType="Doctor">
+		insert into doctor 
+			(name,
+			certificate_type,
+			ID_num,
+			phone,
+			special_plane,
+			sex,
+			birther,
+			age,
+			email,
+			section_id,
+			education,
+			noted)
+		values(
+			#{name},
+			#{certificate_type},
+			#{ID_num},
+			#{phone},
+			#{special_plane},
+			#{sex},
+			#{birther},
+			#{age},
+			#{email},
+			#{section_id},
+			#{education},
+			#{noted})
+	</insert>
+	
+	
+	<!-- look查看 -->
+	<select id="findDoctorById" parameterType="int" resultType="Doctor">
+		select * from doctor where id =#{id} 
+	</select>
+	
+	<!-- edit修改 -->
+	<update id="editDoctor" parameterType="Doctor">
+		update doctor set
+			name = #{name},
+			certificate_type = #{certificate_type},
+			ID_num = #{ID_num},
+			phone = #{phone},
+			special_plane = #{special_plane},
+			sex = #{sex},
+			birther = #{birther},
+			age = #{age},
+			email = #{email},
+			section_id = #{section_id},
+			education = #{education},
+			noted = #{noted}
+		where
+			id = #{id}
+	</update>
+	
+	<!-- 删除 -->
+	<delete id="deleteDoctorById" parameterType="int">
+		delete from doctor where id=#{id }
+	</delete>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+</mapper>

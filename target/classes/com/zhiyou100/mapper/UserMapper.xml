@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 
+namespace : 类路径
+	与此映射文件关联的接口文件路径
+ -->
+<mapper namespace="com.zhiyou100.mapper.UserMapper">
+
+	<sql id="UserSQL">
+		u.id,
+		u.user_name,
+		u.password,
+		u.update_time,
+		u.status,
+		u.real_name,
+		u.email
+	</sql>
+	<sql id="RoleSQL">
+		r.id,
+		r.role_num,
+		r.role_name,
+		r.statuss	
+	</sql>
+
+
+	<resultMap type="User" id="classUser">
+		<id column="id" property="id"/>
+		<result column="user_name" property="user_name"/>
+		<result column="password" property="password"/>
+		<result column="update_time" property="update_time"/>
+		<result column="status" property="status"/>
+		<result column="real_name" property="real_name"/>
+		<result column="email" property="email"/>
+		
+		<association property="role" javaType="Role">
+		<id column="id" property="id"/>
+		<result column="role_num" property="role_num"/>
+		<result column="role_name" property="role_name"/>
+		<result column="statuss" property="statuss"/>
+		</association>
+		
+	</resultMap>
+	
+		
+	<select id="findAllUser" parameterType="Map" resultMap="classUser">
+		
+		select <include refid="UserSQL"/>,
+				<include refid="RoleSQL"/>
+		 from User u,role r,user_role ur
+		 where u.id = ur.user_id
+		 and r.id = ur.role_id
+			<if test="username != null and username != '' ">
+			and	u.user_name like '%${username}%'
+			</if>
+		
+	</select>
+	
+	<!-- 更改查询信息 -->
+	<select id="findUserById" parameterType="int" resultMap="classUser">
+		select <include refid="UserSQL"/>,
+				<include refid="RoleSQL"/>
+		 from user u,role r,user_role ur
+		 where u.id = ur.user_id
+		 and r.id = ur.role_id
+		 and u.id=#{id}
+	</select>
+	<!-- 更改信息 -->
+	<update id="updateUses" parameterType="User">
+		update user set 
+			password = #{password},
+			real_name = #{real_name},
+			email = #{email},
+			status = #{status}
+
+		where id=#{id}
+	</update>
+	<update id="updateRole" parameterType="UserRole">
+		update user_role set 
+			role_id=#{role_id}
+
+		where id=#{id}
+	</update>
+	
+	<!-- 添加 -->
+	<insert id="addUses" parameterType="User" useGeneratedKeys="true" keyProperty="id" >
+		insert into User(user_name,password,real_name,email,status)
+		values (#{user_name},#{password},#{real_name},#{email},#{status})
+	</insert>
+	<insert id="addUserRole" parameterType="UserRole"  >
+		insert into user_role(role_id,user_id)
+		values (#{role_id},#{id})
+		
+	</insert>
+	
+	<!-- 删除 -->
+	<delete id="deleteUserById" parameterType="int">
+		delete  from User where id=#{id}
+	</delete>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+</mapper>

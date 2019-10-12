@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 
+namespace : 类路径
+	与此映射文件关联的接口文件路径
+ -->
+<mapper namespace="com.zhiyou100.mapper.HospitalChargeMapper">
+
+
+	<sql id="RegistrationInforSql">
+	r.medical_record,
+	r.name rname,
+	r.certificate_type,
+	r.ID_num,
+	r.social_safe_num,
+	r.phone,
+	r.self_paying,
+	r.sex,
+	r.career,
+	r.early_appointment,
+	r.doctor_id,
+	r.status,
+	r.noted,
+	r.time,
+	r.section_id,
+	r.age,
+	r.registration_fee
+	</sql>
+	
+	<sql id="HospitalInforSql">
+	h.medical_record,
+	h.caregiver,
+	h.bed_id,
+	h.pay_the_deposit,
+	h.state_illness
+	</sql>
+	<sql id="ChargeManagerSQL">
+		c.id,
+		c.medical_record,
+		c.pay_items_id,
+		c.charge_money,
+		c.charge_time
+	</sql>
+	<sql id="PayItemsSQL">
+		p.id,
+		p.charge_item_name,
+		p.receivable_money
+	</sql>
+	
+	
+	
+	<resultMap type="ChargeManager" id="classChargeManager">
+		<id  column="id" property="id"/>
+		<result column="medical_record" property="medical_record"/>
+		<result column="pay_items_id" property="pay_items_id"/>
+		<result column="charge_money" property="charge_money"/>
+		<result column="charge_time" property="charge_time"/>
+		
+		
+		<collection property="registrationInfor" ofType="RegistrationInfor">
+			<id column="rname" property="name"/>
+			<result column="phone" property="phone"/>
+			<result column="time" property="time"/>
+			<result column="status" property="status"/>
+			
+			<result column="medical_record" property="medical_record"/>
+			<result column="certificate_type" property="certificate_type"/>
+			<result column="ID_num" property="ID_num"/>
+			<result column="social_safe_num" property="social_safe_num"/>
+			<result column="self_paying" property="self_paying"/>
+			<result column="sex" property="sex"/>
+			<result column="career" property="career"/>
+			<result column="early_appointment" property="early_appointment"/>
+			<result column="doctor_id" property="doctor_id"/>
+			<result column="status" property="status"/>
+			<result column="noted" property="noted"/>
+			<result column="section_id" property="section_id"/>
+			<result column="age" property="age"/>
+			<result column="registration_fee" property="registration_fee"/>
+			
+	
+			
+		</collection>
+		<collection property="payItems" ofType="PayItems">
+			<id column="id" property="id"/>
+			<result column="charge_item_name" property="charge_item_name"/>
+			<result column="receivable_money" property="receivable_money"/>
+			</collection>
+	</resultMap>	
+	
+	<select id="findAll" parameterType="Map" resultMap="classChargeManager">
+		SELECT
+			<include refid="RegistrationInforSql"/>,
+			<include refid="ChargeManagerSQL"/>,
+			<include refid="PayItemsSQL"/>
+			
+		FROM
+			registration_infor r,
+			charge_manager c,
+			pay_items p
+		WHERE
+			c.medical_record = r.medical_record
+		AND p.id=c.pay_items_id
+		
+			<if test="medicalrecord != null and medicalrecord != '' ">
+			and	c.medical_record like '%${medicalrecord}%'
+			</if>
+			
+			<if test="rname != null and rname != '' ">
+			and	r.name like '%${rname}%'
+			</if>
+			
+	</select>
+	
+	<!-- 插入 -->
+	
+	<!-- 查看收费 -->
+	<select id="findchargeNewlook" parameterType="int" resultType="PayItems">
+		select * from pay_items where id =#{id}
+	</select>
+	<insert id="insertchargeNewlook" parameterType="ChargeManager">
+		insert into charge_manager(
+		medical_record,pay_items_id,charge_money,charge_time)
+		values (#{medical_record},#{pay_items_id},#{charge_money},#{charge_time})
+	</insert>
+	
+	
+</mapper>

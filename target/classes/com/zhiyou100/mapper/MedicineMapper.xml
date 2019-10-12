@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 
+namespace : 类路径
+	与此映射文件关联的接口文件路径
+ -->
+<mapper namespace="com.zhiyou100.mapper.MedicineMapper">
+
+	
+	
+	<select id="findAll" parameterType="Map" resultType="Drug">
+		select * from drug
+ 		<where>
+ 			<if test="drugnum != null and drugnum != '' ">
+				drug_num like '%${drugnum}%'
+			</if>
+ 			<if test="drugtype != null and drugtype != '' ">
+				drug_type like '%${drugtype}%'
+			</if>
+ 		</where>
+	</select>
+	
+	<insert id="insertDrug" parameterType="Drug">
+		insert into drug (
+		drug_num,
+		drug_url,
+		purchas_price,
+		sale_price,
+		drug_name,
+		drug_type,
+		simple_detail,
+		prodeced_date,
+		expiration_date,
+		quality_date,
+		detail,
+		manufacture,
+		use_infor,
+		total_stock,
+		surplus,
+		noted
+		) values (
+		#{drug_num},
+		#{drug_url},
+		#{purchas_price},
+		#{sale_price},
+		#{drug_name},
+		#{drug_type},
+		#{simple_detail},
+		#{prodeced_date},
+		#{expiration_date},
+		#{quality_date},
+		#{detail},
+		#{manufacture},
+		#{use_infor},
+		#{total_stock},
+		#{surplus},
+		#{noted}
+		)
+	</insert>	
+	
+	<!-- look -->
+	<select id="findMedicineById" parameterType="String" resultType="Drug">
+		select * from drug where drug_num = #{drug_num}
+	</select>
+	
+	<!-- edit -->
+	<update id="editMedicine" parameterType="Drug">
+		update drug set
+			
+			drug_url = #{drug_url},
+			purchas_price = #{purchas_price},
+			sale_price = #{sale_price},
+			drug_name = #{drug_name},
+			drug_type = #{drug_type},
+			simple_detail = #{simple_detail},
+			prodeced_date = #{prodeced_date},
+			expiration_date = #{expiration_date},
+			quality_date = #{quality_date},
+			detail = #{detail},
+			manufacture = #{manufacture},
+			use_infor = #{use_infor},
+			total_stock = #{total_stock},
+			surplus = #{surplus},
+			noted = #{noted}
+		where 
+		 drug_num=#{drug_num}
+	</update>
+	
+	<!-- 删除 -->
+	<delete id="deleteMedicine" parameterType="String">
+		delete from drug where drug_num=#{drug_num}
+	</delete>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+</mapper>

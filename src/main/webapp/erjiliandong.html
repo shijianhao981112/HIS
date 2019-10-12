@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>案例三:二级联动->选科室出对应医生</title>
+</head>
+<body>
+
+<select name="section" id="s1">
+	<option value="1">骨科</option>
+	<option value="2">急诊科</option>
+	<option value="3">妇科</option>
+</select>
+
+<select name="doctor" id="s2">
+
+
+</select>
+
+</body>
+<script type="text/javascript" src="dist/Js/jquery.js"></script>
+<script type="text/javascript">
+	// 输入框绑定失去焦点事件
+	$("#s1").blur(function(){
+		// 获得输入的值
+		var sectionId=$("#s1").val(); 
+		//alert(sectionId)
+		$.ajax({
+			url:"/A_Hospital/findDoctorBySectionId",
+			type:"GET",
+			data:{"sectionId":sectionId},
+			success:function(data){ 
+				$("#s2").empty(); // 清空option, empty()清空内部
+				for(var i=0;i<data.obj.length;i++){
+					$("#s2").append("<option>"+data.obj[i].name+"</option>")
+				}
+			
+			}
+			
+		});
+		
+	});
+
+</script>
+
+
+</html>

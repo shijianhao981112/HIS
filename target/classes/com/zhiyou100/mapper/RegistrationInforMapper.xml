@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 
+namespace : 类路径
+	与此映射文件关联的接口文件路径
+ -->
+<mapper namespace="com.zhiyou100.mapper.RegistrationInforMapper">
+
+	<resultMap type="RegistrationInfor" id="classRegistrationInfor">
+		<id  column="medical_record" property="medical_record"/>
+		<result column="time" property="time"/>
+		<result column="status" property="status"/>
+		
+		<collection property="doctor" ofType="Doctor">
+			<id column="dname" property="name"/>
+		</collection>
+		<collection property="section" ofType="Section">
+			<id column="secco_name" property="secco_name"/>
+		</collection>
+	</resultMap>	
+	
+	<select id="findAll" parameterType="Map" resultMap="classRegistrationInfor">
+		select r.medical_record,d.name dname ,r.time,s.secco_name,r.status
+		from 
+ 			registration_infor r,doctor d,section s
+		where 
+ 			r.doctor_id=d.id
+		AND
+			r.section_id=s.id
+		
+			<if test="medicalrecord != null and medicalrecord != '' ">
+			and	r.medical_record like '%${medicalrecord}%'
+			</if>
+			
+			<if test="dname != null and dname != '' ">
+			and	d.name like '%${dname}%'
+			</if>
+			
+			<if test="secconame != null and secconame != '' ">
+			and	s.secco_name like '%${secconame}%'
+			</if>
+			<if test="(startTime != null and startTime != '')
+			or(endTime != null and endTime != '') ">
+			and	r.time &gt; #{startTime} and r.time &lt; #{endTime}
+			</if>
+			
+		
+			
+	</select>
+	
+	
+	
+	
+	<!-- 详情 -->
+	<resultMap type="RegistrationInfor" id="classfindRegistrationById">
+		<id  column="medical_record" property="medical_record"/>
+		<result column="rname" property="name"/>
+		<result column="ID_num" property="ID_num"/>
+		<result column="registration_fee" property="registration_fee"/>
+		<result column="social_safe_num" property="social_safe_num"/>
+		<result column="phone" property="phone"/>
+		<result column="self_paying" property="self_paying"/>
+		<result column="sex" property="sex"/>
+		<result column="age" property="age"/>
+		<result column="career" property="career"/>
+		<result column="early_appointment" property="early_appointment"/>
+		<result column="noted" property="noted"/>
+		
+		<collection property="certificateType" ofType="CertificateType">
+			<id column="cname" property="name"/>
+		</collection>
+		
+		<collection property="doctor" ofType="Doctor">
+			<id column="dname" property="name"/>
+		</collection>
+		<collection property="section" ofType="Section">
+			<id column="secco_name" property="secco_name"/>
+		</collection>
+	</resultMap>	
+	
+	<select id="findRegistrationById" parameterType="String" resultMap="classfindRegistrationById">
+		select r.medical_record,r.name rname,c.name cname,r.ID_num,r.registration_fee,r.social_safe_num,r.phone,
+		r.self_paying,r.sex,r.age,r.career,r.early_appointment,s.secco_name,d.name dname,r.noted
+		from 
+ 			registration_infor r,doctor d,section s,certificate_type c
+		where 
+			 r.doctor_id=d.id
+		AND
+			r.section_id=s.id
+		AND
+			r.certificate_type=c.id
+		AND
+			r.medical_record=#{medical_record}
+	</select>	
+	
+	<!--=============================== 方法2 Ajax  -->
+	<select id="findRegistrationById2" parameterType="String" resultMap="classfindRegistrationById">
+		select r.medical_record,r.name rname,c.name cname,r.ID_num,r.registration_fee,r.social_safe_num,r.phone,
+		r.self_paying,r.sex,r.age,r.career,r.early_appointment,s.secco_name,d.name dname,r.noted
+		from 
+ 			registration_infor r,doctor d,section s,certificate_type c
+		where 
+			 r.doctor_id=d.id
+		AND
+			r.section_id=s.id
+		AND
+			r.certificate_type=c.id
+		AND
+			r.medical_record=#{medical_record}
+	</select>	
+	
+	<!-- 添加 -->
+	<insert id="insertRegistration" parameterType="RegistrationInfor">
+		insert into registration_infor (medical_record,status,name,certificate_type,ID_num,social_safe_num,registration_fee,phone,self_paying,sex,age,career,early_appointment,section_id,doctor_id,noted) 
+		values (#{medical_record},#{status},#{name},#{certificate_type},#{ID_num},#{social_safe_num},#{registration_fee},#{phone},#{self_paying},#{sex},#{age},#{career},#{early_appointment},#{section_id},#{doctor_id},#{noted})
+	</insert>
+	
+	<!-- 修改 -->
+	<select id="findEditRegistrationById" parameterType="String" resultType="RegistrationInfor">
+		select * from registration_infor where medical_record=#{medical_record}
+	</select>
+	
+	<update id="editRegistration" parameterType="RegistrationInfor">
+		update registration_infor set 
+			name = #{name},
+			certificate_type = #{certificate_type},
+			ID_num = #{ID_num},
+			registration_fee = #{registration_fee},
+			social_safe_num = #{social_safe_num},
+			phone = #{phone},
+			self_paying = #{self_paying},
+			sex = #{sex},
+			age = #{age},
+			career = #{career},
+			early_appointment = #{early_appointment},
+			section_id = #{section_id},
+			doctor_id = #{doctor_id},
+			noted = #{noted}
+
+		where medical_record=#{medical_record}
+	</update>
+	
+	<!-- 删除 -->
+	<delete id="deleteRegistrationById" parameterType="String">
+		delete from registration_infor where medical_record=#{medical_record}
+	</delete>
+	
+	
+	<!--======================批量删除====================== -->
+	
+	<delete id="deleteAllPL">
+        delete from registration_infor where medical_record in
+        <foreach collection="list" item="medical_record" separator="," open="(" close=")">
+                     #{medical_record}
+      </foreach>
+    </delete>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+</mapper>

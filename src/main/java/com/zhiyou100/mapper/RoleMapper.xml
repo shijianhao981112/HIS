@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 
+namespace : 类路径
+	与此映射文件关联的接口文件路径
+ -->
+<mapper namespace="com.zhiyou100.mapper.RoleMapper">
+
+	<sql id="UserSQL">
+		u.id,
+		u.user_name,
+		u.password,
+		u.update_time,
+		u.status,
+		u.real_name,
+		u.email
+	</sql>
+	<sql id="RoleSQL">
+		r.id,
+		r.role_num,
+		r.role_name,
+		r.statuss	
+	</sql>
+
+
+	<resultMap type="Role" id="classRole">
+		
+		
+		
+		
+		<id column="id" property="id"/>
+		<result column="role_num" property="role_num"/>
+		<result column="role_name" property="role_name"/>
+		<result column="statuss" property="statuss"/>
+		
+		
+	</resultMap>
+	
+		
+	<select id="findAllRole" parameterType="Map" resultMap="classRole">
+		
+		select 
+				<include refid="RoleSQL"/>
+		 from role r
+		<where>
+			<if test="rolename != null and rolename != '' ">
+				r.role_name like '%${rolename}%'
+			</if>
+		</where>
+	</select>
+	
+	<!-- insert -->
+	<insert id="insertRole" parameterType="Role" useGeneratedKeys="true" keyProperty="id" >
+		insert into role (role_name,statuss)
+		 values (#{role_name},#{statuss})
+	</insert>
+	
+	<insert id="insertRole_permission" parameterType="Map">
+		insert into role_permission (permission_id,role_id) 
+		values (#{i},#{id})
+	</insert>
+	
+	<!--  -->
+	
+	<resultMap type="Role" id="classrp">
+		<id column="id" property="id"/>
+		<result column="role_num" property="role_num"/>
+		<result column="role_name" property="role_name"/>
+		<result column="statuss" property="statuss"/>
+		
+		<association property="rolePermission" javaType="RolePermission">
+		<id column="id" property="id"/>
+		<result column="role_id" property="role_id"/>
+		<result column="permission_id" property="permission_id"/>
+		
+		</association>
+	</resultMap>
+	<select id="findRoleById" parameterType="int" resultMap="classrp">
+		select rp.permission_id,r.role_name,r.statuss
+		from role r,role_permission rp
+		where r.id = rp.role_id
+		and r.id =#{id}
+					
+	</select>
+	
+	
+	
+	
+	
+	
+	
+	
+</mapper>

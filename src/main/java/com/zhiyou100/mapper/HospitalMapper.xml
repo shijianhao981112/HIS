@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 
+namespace : 类路径
+	与此映射文件关联的接口文件路径
+ -->
+<mapper namespace="com.zhiyou100.mapper.HospitalMapper">
+
+
+	<sql id="RegistrationInforSql">
+	r.medical_record,
+	r.name rname,
+	r.certificate_type,
+	r.ID_num,
+	r.social_safe_num,
+	r.phone,
+	r.self_paying,
+	r.sex,
+	r.career,
+	r.early_appointment,
+	r.doctor_id,
+	r.status,
+	r.noted,
+	r.time,
+	r.section_id,
+	r.age,
+	r.registration_fee
+	</sql>
+	
+	<sql id="HospitalInforSql">
+	h.medical_record,
+	h.caregiver,
+	h.bed_id,
+	h.pay_the_deposit,
+	h.state_illness
+	
+	</sql>
+	
+	<resultMap type="HospitalInfor" id="classHospitalInfor">
+		<id  column="medical_record" property="medical_record"/>
+		<result column="bed_id" property="bed_id"/>
+		<result column="pay_the_deposit" property="pay_the_deposit"/>
+		
+		
+		<collection property="registrationInfor" ofType="RegistrationInfor">
+			<id column="rname" property="name"/>
+			<result column="phone" property="phone"/>
+			<result column="time" property="time"/>
+			<result column="status" property="status"/>
+			
+			<collection property="doctor" ofType="Doctor">
+			<id column="dname" property="name"/>
+			</collection>
+			
+			<collection property="section" ofType="Section">
+			<id column="secco_name" property="secco_name"/>
+			</collection>
+			
+		</collection>
+		
+	</resultMap>	
+	
+	<select id="findAll" parameterType="Map" resultMap="classHospitalInfor">
+		SELECT
+			<include refid="RegistrationInforSql"/>,
+			<include refid="HospitalInforSql"/>,
+			d.name dname,
+			s.secco_name
+		FROM
+			registration_infor r,
+			doctor d,
+			section s,
+			hospital_infor h
+		WHERE
+			h.medical_record = r.medical_record
+		AND r.doctor_id = d.id
+		AND r.section_id = s.id
+			<if test="medicalrecord != null and medicalrecord != '' ">
+			and	r.medical_record like '%${medicalrecord}%'
+			</if>
+			
+			<if test="dname != null and dname != '' ">
+			and	d.name like '%${dname}%'
+			</if>
+			
+			<if test="secconame != null and secconame != '' ">
+			and	s.secco_name like '%${secconame}%'
+			</if>
+			<if test="(startTime != null and startTime != '')
+			or(endTime != null and endTime != '') ">
+			and	r.time &gt; #{startTime} and r.time &lt; #{endTime}
+			</if>
+	
+			
+	</select>
+	
+	<!-- 修改 -->
+	<resultMap type="HospitalInfor" id="classfindEditHospitalById">
+		<id  column="medical_record" property="medical_record"/>
+		<result column="bed_id" property="bed_id"/>
+		<result column="pay_the_deposit" property="pay_the_deposit"/>
+		
+		<result column="caregiver" property="caregiver"/>
+		<result column="state_illness" property="state_illness"/>
+		
+		
+		
+		<collection property="registrationInfor" ofType="RegistrationInfor">
+			<id column="rname" property="name"/>
+			<result column="phone" property="phone"/>
+			<result column="time" property="time"/>
+			<result column="status" property="status"/>
+			
+			<result column="medical_record" property="medical_record"/>
+			<result column="certificate_type" property="certificate_type"/>
+			<result column="ID_num" property="ID_num"/>
+			<result column="social_safe_num" property="social_safe_num"/>
+			<result column="self_paying" property="self_paying"/>
+			<result column="sex" property="sex"/>
+			<result column="career" property="career"/>
+			<result column="early_appointment" property="early_appointment"/>
+			<result column="doctor_id" property="doctor_id"/>
+			<result column="status" property="status"/>
+			<result column="noted" property="noted"/>
+			<result column="section_id" property="section_id"/>
+			<result column="age" property="age"/>
+			<result column="registration_fee" property="registration_fee"/>
+			
+			
+			
+			
+				<collection property="doctor" ofType="Doctor">
+				<id column="dname" property="name"/>
+				<result column="id" property="id"/>
+				<result column="certificate_type" property="certificate_type"/>
+				<result column="ID_num" property="ID_num"/>
+				<result column="phone" property="phone"/>
+				<result column="special_plane" property="special_plane"/>
+				<result column="sex" property="sex"/>
+				<result column="age" property="age"/>
+				<result column="birther" property="birther"/>
+				<result column="email" property="email"/>
+				<result column="section_id" property="section_id"/>
+				<result column="education" property="education"/>
+				<result column="noted" property="noted"/>
+				<result column="time" property="time"/>
+				
+				</collection>
+				
+				<collection property="section" ofType="Section">
+				<id column="secco_name" property="secco_name"/>
+				<result column="seccp_num" property="seccp_num"/>
+				<result column="id" property="id"/>
+				</collection>
+				
+				<collection property="certificateType" ofType="CertificateType">
+				<id column="cname" property="name"/>
+				
+				</collection>
+				
+		</collection>
+		
+	</resultMap>	
+	
+	
+	
+	<select id="findEditHospitalById" parameterType="String" resultMap="classfindEditHospitalById">
+		select 
+			<include refid="RegistrationInforSql"/>,
+			<include refid="HospitalInforSql"/>,
+			d.name dname,
+			s.secco_name,
+			
+			c.name cname
+			
+		FROM
+			registration_infor r,
+			doctor d,
+			section s,
+			hospital_infor h,
+			certificate_type c
+		WHERE
+			h.medical_record = r.medical_record
+		AND r.doctor_id = d.id
+		AND r.section_id = s.id
+		AND r.certificate_type=c.id
+		AND r.medical_record=#{medical_record}
+	</select>
+	
+	<update id="ReditRegistration" parameterType="RegistrationInfor">
+		update registration_infor set 
+			section_id = #{section_id},
+			doctor_id = #{doctor_id},
+			noted = #{noted}
+
+		where medical_record=#{medical_record}
+	</update>
+	<update id="HeditRegistration" parameterType="HospitalInfor">
+		update hospital_infor set 
+			caregiver = #{caregiver},
+			bed_id = #{bed_id},
+			pay_the_deposit = #{pay_the_deposit},
+			state_illness = #{state_illness}
+
+		where medical_record=#{medical_record}
+	</update>
+	
+	
+	<!-- 添加 -->
+	<insert id="insertHospital" parameterType="HospitalInfor">
+		insert into hospital_infor(medical_record,caregiver,bed_id,pay_the_deposit,state_illness)
+		values (#{medical_record},#{caregiver},#{bed_id},#{pay_the_deposit},#{state_illness})
+	</insert>
+	
+	<!-- 退院 出院 -->
+	<update id="editStatusTY" parameterType="String">
+		update registration_infor set 
+			
+			status = '已退院'
+
+		where medical_record=#{medical_record}
+	</update>
+	<update id="editStatusCY" parameterType="String">
+		update registration_infor set 
+			
+			status = '已出院'
+
+		where medical_record=#{medical_record}
+	</update>
+	
+	<!-- 删除 -->
+	<delete id="deleteStatus" parameterType="String">
+		delete from hospital_infor where medical_record=#{medical_record}
+	
+	</delete>
+	
+	
+	
+	
+</mapper>

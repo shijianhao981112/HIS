@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>案例二:输入病例号,异步回显用户信息</title>
+</head>
+<body>
+
+<table border="2">
+	<tr>
+		<td>id</td>
+		<td>
+			<input type="text" id="i1">
+		</td>
+	</tr>
+	<tr>
+		<td>用户名</td>
+		<td><input type="text" id="i2"></td>
+	</tr>
+	<tr>
+		<td>密码</td>
+		<td><input type="text" id="i3"></td>
+	</tr>
+	<tr>
+		<td>邮箱</td>
+		<td><input type="text" id="i4"></td>
+	</tr>
+</table>
+
+
+</body>
+<script type="text/javascript" src="dist/Js/jquery.js"></script>
+<script type="text/javascript">
+	// 输入框绑定失去焦点事件
+	$("#i1").blur(function(){
+		// 获得输入的值
+		var val=$("#i1").val(); 
+		//alert(val)
+		$.ajax({
+			url:"/A_Hospital/findUserById.do",
+			type:"GET",
+			data:{"id":val},
+			success:function(data){ // 返回状态码
+				
+				$("#i2").val(data.obj.real_name);	
+				$("#i3").val(data.obj.password);	
+				$("#i4").val(data.obj.email);	
+			
+			}
+			
+		});
+		
+	});
+
+</script>
+
+
+</html>
